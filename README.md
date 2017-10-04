@@ -1,2 +1,2 @@
 # ocr
-ocr rest api
+ocr rest api using tesseract js
