@@ -1,24 +1,38 @@
 var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
+var base64Img = require('base64-img')
+var Tesseract = require('tesseract.js')
 var bodyParser = require('body-parser');
-
-var index = require('./routes/index');
+var logger = require('morgan');
 
 var app = express();
-
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-
-app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(logger('dev'));
 
-app.use('/', index);
+app.get('/', function(req, res) {
+  res.send('The server is working. Send a POST request to /api/ocr with a request body {img: "base64"}');
+})
+
+app.post('/api/ocr', function(req, res) {
+  if(req.body.img) {
+    base64Img.img(req.body.img, '', 'image', function(err, filepath) {
+      Tesseract.recognize('./image.png')
+      .then(function(result){
+         res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify(
+          {
+            result: {
+              text: result.text.replace('\n','').replace('\n',''),
+              confidence: result.confidence,
+            }
+          }, null, 2));
+      })
+    });
+  }
+  else {
+    res.send('base64 not found');
+  }
+})
 
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
@@ -26,11 +40,5 @@ app.use(function(req, res, next) {
   next(err);
 });
 
-app.use(function(err, req, res, next) {
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-  res.status(err.status || 500);
-  res.render('error');
-});
-
-module.exports = app;
+app.listen(3000);
+console.log('Server listening on port 3000')
