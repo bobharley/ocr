@@ -10,7 +10,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(logger('dev'));
 
 app.get('/', function(req, res) {
-  res.send('The server is working.\nSend a POST request to /api/ocr with a request body {img: "base64"}');
+  res.send('The server is working. Send a POST request to /api/ocr with a request body {img: "base64"}');
 })
 
 app.post('/api/ocr', function(req, res) {
