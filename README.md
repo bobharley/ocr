@@ -1,2 +1,11 @@
-# ocr
-ocr rest api using tesseract js
+Tesseract REST API
+================
+
+
+REST API Optical character recognition using tesseractjs nodejs and express
+
+----------
+
+### Install
+
+run `npm install && node app`
